@@ -11,7 +11,7 @@ public class FPSController : MonoBehaviour
 
     void Start()
     {
-        cam = transform.Find("camera").GetComponent<Camera>();
+        cam = transform.Find("PlayerCamera").GetComponent<Camera>();
         anim = GetComponent<Animator>();
 
         Cursor.lockState = CursorLockMode.Locked;
