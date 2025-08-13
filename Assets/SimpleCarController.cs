@@ -13,15 +13,24 @@ public class SimpleCarController : MonoBehaviour
     private float verticalInput;
     private float horizontalInput;
 
+    private AudioSource sirenAudioSource;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        sirenAudioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
         verticalInput = Input.GetAxis("Vertical");
         horizontalInput = Input.GetAxis("Horizontal");
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            if(!sirenAudioSource.isPlaying)
+                sirenAudioSource.Play();
+            else
+                sirenAudioSource.Stop();
+        }
     }
 
     void FixedUpdate()
@@ -48,7 +57,7 @@ public class SimpleCarController : MonoBehaviour
 
     void HandleSteering()
     {
-        float turnMultiplier = Mathf.Clamp01(rb.linearVelocity.magnitude / maxSpeed);
+        float turnMultiplier = 0.5f; // Mathf.Clamp01(rb.linearVelocity.magnitude /maxSpeed);
 
         rb.AddTorque(transform.up * horizontalInput * turnStrength * turnMultiplier);
     }

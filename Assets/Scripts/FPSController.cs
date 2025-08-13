@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 public class FPSController : MonoBehaviour
@@ -9,6 +10,11 @@ public class FPSController : MonoBehaviour
     Camera cam;
     Animator anim;
 
+    public GameObject cutsceneTimeline;
+    private void OnEnable()
+    {
+        cutsceneTimeline.SetActive(false);
+    }
     void Start()
     {
         cam = transform.Find("PlayerCamera").GetComponent<Camera>();
