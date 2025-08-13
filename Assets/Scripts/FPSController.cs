@@ -14,6 +14,9 @@ public class FPSController : MonoBehaviour
     private void OnEnable()
     {
         cutsceneTimeline.SetActive(false);
+        Vector3 rot = transform.rotation.eulerAngles;
+        rot.x = rot.z = 0;
+        transform.rotation = Quaternion.Euler(rot);
     }
     void Start()
     {

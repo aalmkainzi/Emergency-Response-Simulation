@@ -13,11 +13,21 @@ public class SimpleCarController : MonoBehaviour
     private float verticalInput;
     private float horizontalInput;
 
-    private AudioSource sirenAudioSource;
+    AudioSource sirenAudioSource;
+    AudioSource drivingAudioSource;
+
+    public AudioClip sirenSound;
+    public AudioClip drivingSound;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        sirenAudioSource = GetComponent<AudioSource>();
+
+        AudioSource[] audioSources = GetComponents<AudioSource>();
+        sirenAudioSource = audioSources[0];
+        drivingAudioSource = audioSources[1];
+
+        sirenAudioSource.clip = sirenSound;
+        drivingAudioSource.clip = drivingSound;
     }
 
     void Update()
@@ -26,7 +36,7 @@ public class SimpleCarController : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal");
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            if(!sirenAudioSource.isPlaying)
+            if (!sirenAudioSource.isPlaying)
                 sirenAudioSource.Play();
             else
                 sirenAudioSource.Stop();
@@ -44,14 +54,29 @@ public class SimpleCarController : MonoBehaviour
     {
         float forwardSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
 
+        bool moving = false;
         if (forwardSpeed < maxSpeed && verticalInput > 0)
         {
+            moving = true;
+
             rb.AddForce(transform.forward * verticalInput * accelerationForce);
         }
 
         if (verticalInput < 0)
         {
+            moving = true;
             rb.AddForce(transform.forward * verticalInput * breakingForce);
+        }
+
+        if(moving)
+        {
+            if (!drivingAudioSource.isPlaying)
+                drivingAudioSource.Play();
+        }
+        else
+        {
+            if (drivingAudioSource.isPlaying)
+                drivingAudioSource.Stop();
         }
     }
 
