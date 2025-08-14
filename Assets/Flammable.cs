@@ -47,6 +47,7 @@ public class Flammable : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Flammable nearbyFlammable = other.gameObject.GetComponent<Flammable>();
-        inRange.Add(nearbyFlammable);
+        if(nearbyFlammable != null)
+            inRange.Add(nearbyFlammable);
     }
 }
