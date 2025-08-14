@@ -10,6 +10,8 @@ public class FPSController : MonoBehaviour
     Camera cam;
     Animator anim;
 
+    Rigidbody rb;
+
     public GameObject cutsceneTimeline;
     private void OnEnable()
     {
@@ -20,6 +22,7 @@ public class FPSController : MonoBehaviour
     }
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         cam = transform.Find("PlayerCamera").GetComponent<Camera>();
         anim = GetComponent<Animator>();
 
@@ -43,11 +46,11 @@ public class FPSController : MonoBehaviour
         float move_h = Input.GetAxis("Horizontal");
         float move_v = Input.GetAxis("Vertical");
 
-        Vector3 pos = transform.localPosition;
+        Vector3 velocity = Vector3.zero;
         Vector3 right = transform.right;
         Vector3 fwd = transform.forward;
-        pos += (move_h * speed * Time.deltaTime) * right;
-        pos += (move_v * speed * Time.deltaTime) * fwd;
+        velocity += (move_h * speed) * right;
+        velocity += (move_v * speed) * fwd;
 
         if(move_h != 0.0f || move_v != 0.0f)
         {
@@ -58,6 +61,6 @@ public class FPSController : MonoBehaviour
             anim.SetBool("run", false);
         }
 
-        transform.localPosition = pos;
+        rb.linearVelocity= velocity;
     }
 }
