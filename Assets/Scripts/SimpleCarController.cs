@@ -43,6 +43,12 @@ public class SimpleCarController : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        sirenAudioSource.Stop();
+        drivingAudioSource.Stop();
+    }
+
     void FixedUpdate()
     {
         HandleMovement();
