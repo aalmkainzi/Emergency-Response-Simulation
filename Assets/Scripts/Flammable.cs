@@ -52,7 +52,7 @@ public class Flammable : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(gameObject.name + " triggered by " + other.gameObject.name);
+        // Debug.Log(gameObject.name + " triggered by " + other.gameObject.name);
         Flammable nearbyFlammable = other.gameObject.GetComponent<Flammable>();
         if(nearbyFlammable != null)
             nearbyFlammables.Add(nearbyFlammable);

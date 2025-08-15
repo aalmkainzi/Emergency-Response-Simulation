@@ -1,5 +1,8 @@
 using System.Diagnostics;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
+using static UnityEngine.UI.Image;
 
 public class FPSController : MonoBehaviour
 {
@@ -14,6 +17,9 @@ public class FPSController : MonoBehaviour
 
     public GameObject missionSite;
     public GameObject cutscene;
+    public GameObject lookSphere;
+
+    int cityLayer;
     private void OnEnable()
     {
         cutscene.SetActive(false);
@@ -22,8 +28,11 @@ public class FPSController : MonoBehaviour
         rot.x = rot.z = 0;
         transform.rotation = Quaternion.Euler(rot);
     }
+
     void Start()
     {
+        cityLayer = LayerMask.NameToLayer("City");
+        UnityEngine.Debug.Log("City layer = " + cityLayer);
         rb = GetComponent<Rigidbody>();
         cam = transform.Find("PlayerCamera").GetComponent<Camera>();
         anim = GetComponent<Animator>();
@@ -64,5 +73,23 @@ public class FPSController : MonoBehaviour
         }
 
         rb.linearVelocity= velocity;
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        UnityEngine.Debug.Log("Ray origin = " + ray.origin);
+        UnityEngine.Debug.Log("Ray end = " + (ray.origin + ray.direction * 30.0f));
+        UnityEngine.Debug.DrawRay(ray.origin, ray.direction);
+        RaycastHit hitInfo;
+        bool hit = Physics.Raycast(ray, out hitInfo, maxDistance: 30.0f, layerMask: cityLayer);
+
+        if(hit)
+        {
+            Vector3 hitPoint = hitInfo.point;
+
+            lookSphere.transform.position = hitPoint;
+        }
+        else
+        {
+            lookSphere.transform.position = new Vector3(-100, -100, -100);
+        }
     }
 }
