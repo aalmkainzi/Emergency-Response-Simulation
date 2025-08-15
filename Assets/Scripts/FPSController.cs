@@ -12,10 +12,12 @@ public class FPSController : MonoBehaviour
 
     Rigidbody rb;
 
-    public GameObject cutsceneTimeline;
+    public GameObject missionSite;
+    public GameObject cutscene;
     private void OnEnable()
     {
-        cutsceneTimeline.SetActive(false);
+        cutscene.SetActive(false);
+        missionSite.SetActive(true);
         Vector3 rot = transform.rotation.eulerAngles;
         rot.x = rot.z = 0;
         transform.rotation = Quaternion.Euler(rot);
