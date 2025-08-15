@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Compression;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -74,16 +75,16 @@ public class FPSController : MonoBehaviour
 
         rb.linearVelocity= velocity;
 
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        UnityEngine.Debug.Log("Ray origin = " + ray.origin);
-        UnityEngine.Debug.Log("Ray end = " + (ray.origin + ray.direction * 30.0f));
-        UnityEngine.Debug.DrawRay(ray.origin, ray.direction);
+        Ray ray = new();
+        ray.origin = cam.transform.position;
+        ray.direction = cam.transform.forward;
         RaycastHit hitInfo;
-        bool hit = Physics.Raycast(ray, out hitInfo, maxDistance: 30.0f, layerMask: cityLayer);
+        bool hit = Physics.Raycast(ray, out hitInfo, maxDistance: 8.5f, layerMask: 1 << cityLayer);
 
         if(hit)
         {
             Vector3 hitPoint = hitInfo.point;
+            UnityEngine.Debug.Log("Ray hit at " + hitPoint);
 
             lookSphere.transform.position = hitPoint;
         }
@@ -91,5 +92,18 @@ public class FPSController : MonoBehaviour
         {
             lookSphere.transform.position = new Vector3(-100, -100, -100);
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+        Gizmos.DrawRay(ray);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        UnityEngine.Debug.Log("Player collided with " + collision.gameObject.name);
     }
 }
