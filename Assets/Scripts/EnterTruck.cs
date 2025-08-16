@@ -28,19 +28,13 @@ public class EnterTruck : MonoBehaviour
             {
                 inside = true;
                 playerController.gameObject.transform.parent = transform;
-                Debug.Log($"Before SetActive: name={playerController.gameObject.name}, activeSelf={playerController.gameObject.activeSelf}, activeInHierarchy={playerController.gameObject.activeInHierarchy}");
-
 
                 firetruckController.enabled = true;
 
-                Invoke(nameof(DisablePlayer), 0.15f);
-
-                Debug.Log($"After SetActive: name={playerController.gameObject.name}, activeSelf={playerController.gameObject.activeSelf}, activeInHierarchy={playerController.gameObject.activeInHierarchy}");
+                DisablePlayer();
 
                 interiorCamera.SetActive(true);
                 firetruckInteriorOverlay.SetActive(true);
-
-                Debug.Log("Got inside firetruck");
             }
         }
         else

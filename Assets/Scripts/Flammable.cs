@@ -22,8 +22,30 @@ public class Flammable : MonoBehaviour
 
     public void SetOnFire()
     {
+        if (onFire) return;
+
         onFire = true;
-        ParticleSystem ps = transform.Find("FirePS").GetComponent<ParticleSystem>();
+        Transform child = transform.Find("FirePS");
+
+        if (child == null)
+        {
+            Debug.Log(gameObject.name + " does not have a FirePS child");
+            Debug.Log("List of children");
+
+            string listOfChildren = "";
+
+            foreach (Transform t in transform)
+            {
+                listOfChildren += t.name + ", ";
+            }
+
+            Debug.Log(listOfChildren);
+            
+        }
+
+        ParticleSystem ps = child.GetComponent<ParticleSystem>();
+
+
         ps.Play(true);
     }
 

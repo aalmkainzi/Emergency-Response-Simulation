@@ -22,13 +22,14 @@ public class FPSController : MonoBehaviour
     public GameObject cutscene;
     public GameObject lookSphere;
 
-    int cityLayer;
-
     Medic currentlySelectedMedic = null;
     Medic currentlyHoveredMedic = null;
 
+    int medicLayer;
     private void OnEnable()
     {
+        medicLayer = LayerMask.NameToLayer("Medic");
+        UnityEngine.Debug.Log("Medic layer = " + medicLayer);
         cutscene.SetActive(false);
         missionSite.SetActive(true);
         Vector3 rot = transform.rotation.eulerAngles;
@@ -38,14 +39,14 @@ public class FPSController : MonoBehaviour
 
     void Start()
     {
-        cityLayer = LayerMask.NameToLayer("City");
-        UnityEngine.Debug.Log("City layer = " + cityLayer);
         rb = GetComponent<Rigidbody>();
         cam = transform.Find("PlayerCamera").GetComponent<Camera>();
         anim = GetComponent<Animator>();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        UnityEngine.Debug.Log("clickable layers = " + clickable.value);
     }
 
     void Update()
@@ -83,27 +84,34 @@ public class FPSController : MonoBehaviour
 
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
         RaycastHit hitInfo;
+        RaycastHit medicHitInfo;
+
         bool hit = Physics.Raycast(ray, out hitInfo, maxDistance: 8.5f, layerMask: clickable);
+        bool medicHit = Physics.Raycast(ray, out medicHitInfo, maxDistance: 8.5f, layerMask: 1 << medicLayer);
+
+        UnityEngine.Debug.DrawLine(ray.origin, ray.origin + (ray.direction * 8.5f), new Color(1.0f, 0, 1.0f, 1.0f));
 
         bool unhover = true;
-        if(hit)
-        {
-            GameObject collidedWith = hitInfo.collider.gameObject;
-            if(collidedWith.layer == LayerMask.NameToLayer("City"))
-            {
-                Vector3 hitPoint = hitInfo.point;
 
-                lookSphere.transform.position = hitPoint;
-            }
-            else
+        if(medicHit)
+        {
+            GameObject collidedWith = medicHitInfo.collider.gameObject;
+            Medic medic = collidedWith.GetComponent<Medic>();
+            UnityEngine.Debug.Log("Ray hit Medic: " + collidedWith.name);
+            UnityEngine.Debug.Assert(medic != null);
+            if(medic != currentlySelectedMedic)
             {
-                Medic medic = collidedWith.GetComponent<Medic>();
-                UnityEngine.Debug.Assert(medic != null);
                 currentlyHoveredMedic = medic;
                 currentlyHoveredMedic.Hover();
-                unhover = false;
-                lookSphere.transform.position = new Vector3(-100, -100, -100);
             }
+            unhover = false;
+            lookSphere.transform.position = new Vector3(-100, -100, -100);
+        }
+        else if(hit)
+        {
+            GameObject collidedWith = hitInfo.collider.gameObject;            
+            Vector3 hitPoint = hitInfo.point;
+            lookSphere.transform.position = hitPoint;  
         }
         else
         {
@@ -116,17 +124,25 @@ public class FPSController : MonoBehaviour
             currentlyHoveredMedic = null;
         }
 
-        if (Input.GetMouseButtonDown(0) && currentlyHoveredMedic != null)
+        if (Input.GetMouseButtonDown(0))
         {
-            if (currentlySelectedMedic != null)
+            if (currentlyHoveredMedic != null)
             {
-                currentlySelectedMedic.Unselect();
+                if (currentlySelectedMedic != null)
+                {
+                    currentlySelectedMedic.Unselect();
+                }
+                currentlySelectedMedic = currentlyHoveredMedic;
+                currentlySelectedMedic.Unhover();
+                currentlySelectedMedic.Select();
+                currentlyHoveredMedic = null;
             }
-            currentlySelectedMedic = currentlyHoveredMedic;
-            currentlySelectedMedic.Unhover();
-            currentlySelectedMedic.Select();
-            currentlyHoveredMedic = null;
+            else if(hit && currentlySelectedMedic != null && currentlyHoveredMedic == null)
+            {
+                currentlySelectedMedic.GotoPoint(hitInfo.point);
+            }
         }
+
     }
 
     private void OnDrawGizmosSelected()

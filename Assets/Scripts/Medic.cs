@@ -10,11 +10,20 @@ public class Medic : MonoBehaviour
 
     GameObject hoverShape;
     GameObject selectShape;
+
+    Vector3 currentDestination;
+
+    Animator anim;
+
     private void Start()
     {
+        anim = GetComponent<Animator>();
+
         hoverShape = transform.Find("HoverShape").gameObject;
         selectShape = transform.Find("SelectShape").gameObject;
         agent = GetComponent<NavMeshAgent>();
+
+        currentDestination = transform.position;
     }
 
     private void Update()
@@ -38,6 +47,14 @@ public class Medic : MonoBehaviour
         else
         {
             hoveredOverPrevFrame = false;
+        }
+
+        if(Vector3.Distance(currentDestination, transform.position) < 0.1f)
+        {
+            currentDestination = transform.position;
+            agent.ResetPath();
+
+            anim.SetBool("Running", false);
         }
     }
 
@@ -70,7 +87,13 @@ public class Medic : MonoBehaviour
 
     public void GotoPoint(Vector3 point)
     {
+        Debug.Log("agent active = " + agent.isActiveAndEnabled);
+        Debug.Log("agent on navmesh = " + agent.isOnNavMesh);
+
+        currentDestination = point;
         agent.SetDestination(point);
+
+        anim.SetBool("Running", true);
     }
 
     private void OnTriggerEnter(Collider other)

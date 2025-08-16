@@ -15,20 +15,51 @@ public class SimpleCarController : MonoBehaviour
 
     AudioSource sirenAudioSource;
     AudioSource drivingAudioSource;
+    AudioSource engineAudioSource = null;
 
     public AudioClip sirenSound;
     public AudioClip drivingSound;
+    public AudioClip carEngineSound;
+
+    bool initailized = false;
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
 
-        AudioSource[] audioSources = GetComponents<AudioSource>();
-        sirenAudioSource = audioSources[0];
-        drivingAudioSource = audioSources[1];
-
-        sirenAudioSource.clip = sirenSound;
-        drivingAudioSource.clip = drivingSound;
     }
+
+    private void OnEnable()
+    {
+        if(!initailized)
+        {
+            rb = GetComponent<Rigidbody>();
+
+            AudioSource[] audioSources = GetComponents<AudioSource>();
+            sirenAudioSource = audioSources[0];
+            drivingAudioSource = audioSources[1];
+            engineAudioSource = audioSources[2];
+            engineAudioSource.volume = 0.5f;
+            sirenAudioSource.volume = 0.75f;
+
+            sirenAudioSource.clip = sirenSound;
+            drivingAudioSource.clip = drivingSound;
+            engineAudioSource.clip = carEngineSound;
+
+            drivingAudioSource.Play();
+
+            initailized = true;
+        }
+
+        Debug.Log("FIRE TRUCK ON ENABLE");
+        engineAudioSource.Play();
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("FIRE TRUCK ON DISABLE");
+
+        engineAudioSource.Stop();
+    }
+
 
     void Update()
     {
@@ -43,11 +74,6 @@ public class SimpleCarController : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        sirenAudioSource.Stop();
-        drivingAudioSource.Stop();
-    }
 
     void FixedUpdate()
     {
@@ -60,30 +86,17 @@ public class SimpleCarController : MonoBehaviour
     {
         float forwardSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
 
-        bool moving = false;
         if (forwardSpeed < maxSpeed && verticalInput > 0)
         {
-            moving = true;
-
             rb.AddForce(transform.forward * verticalInput * accelerationForce);
         }
 
         if (verticalInput < 0)
         {
-            moving = true;
             rb.AddForce(transform.forward * verticalInput * breakingForce);
         }
-
-        if(moving)
-        {
-            if (!drivingAudioSource.isPlaying)
-                drivingAudioSource.Play();
-        }
-        else
-        {
-            if (drivingAudioSource.isPlaying)
-                drivingAudioSource.Stop();
-        }
+        
+        drivingAudioSource.volume = (forwardSpeed * 4) / maxSpeed;
     }
 
     void HandleSteering()
