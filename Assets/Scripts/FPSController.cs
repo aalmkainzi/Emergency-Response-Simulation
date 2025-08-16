@@ -7,6 +7,8 @@ using static UnityEngine.UI.Image;
 
 public class FPSController : MonoBehaviour
 {
+    public LayerMask clickable;
+    
     public float speed = 5f;
     public float mouse_speed = 100f;
     private float x_rot = 0f;
@@ -21,6 +23,10 @@ public class FPSController : MonoBehaviour
     public GameObject lookSphere;
 
     int cityLayer;
+
+    Medic currentlySelectedMedic = null;
+    Medic currentlyHoveredMedic = null;
+
     private void OnEnable()
     {
         cutscene.SetActive(false);
@@ -75,22 +81,51 @@ public class FPSController : MonoBehaviour
 
         rb.linearVelocity= velocity;
 
-        Ray ray = new();
-        ray.origin = cam.transform.position;
-        ray.direction = cam.transform.forward;
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
         RaycastHit hitInfo;
-        bool hit = Physics.Raycast(ray, out hitInfo, maxDistance: 8.5f, layerMask: 1 << cityLayer);
+        bool hit = Physics.Raycast(ray, out hitInfo, maxDistance: 8.5f, layerMask: clickable);
 
+        bool unhover = true;
         if(hit)
         {
-            Vector3 hitPoint = hitInfo.point;
-            UnityEngine.Debug.Log("Ray hit at " + hitPoint);
+            GameObject collidedWith = hitInfo.collider.gameObject;
+            if(collidedWith.layer == LayerMask.NameToLayer("City"))
+            {
+                Vector3 hitPoint = hitInfo.point;
 
-            lookSphere.transform.position = hitPoint;
+                lookSphere.transform.position = hitPoint;
+            }
+            else
+            {
+                Medic medic = collidedWith.GetComponent<Medic>();
+                UnityEngine.Debug.Assert(medic != null);
+                currentlyHoveredMedic = medic;
+                currentlyHoveredMedic.Hover();
+                unhover = false;
+                lookSphere.transform.position = new Vector3(-100, -100, -100);
+            }
         }
         else
         {
             lookSphere.transform.position = new Vector3(-100, -100, -100);
+        }
+
+        if(unhover && currentlyHoveredMedic != null)
+        {
+            currentlyHoveredMedic.Unhover();
+            currentlyHoveredMedic = null;
+        }
+
+        if (Input.GetMouseButtonDown(0) && currentlyHoveredMedic != null)
+        {
+            if (currentlySelectedMedic != null)
+            {
+                currentlySelectedMedic.Unselect();
+            }
+            currentlySelectedMedic = currentlyHoveredMedic;
+            currentlySelectedMedic.Unhover();
+            currentlySelectedMedic.Select();
+            currentlyHoveredMedic = null;
         }
     }
 
