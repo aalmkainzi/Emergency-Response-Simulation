@@ -141,15 +141,6 @@ public class FPSController : MonoBehaviour
                 currentlySelectedMedic.GotoPoint(hitInfo.point);
             }
         }
-
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.blue;
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-        Gizmos.DrawRay(ray);
     }
 
     private void OnCollisionEnter(Collision collision)
