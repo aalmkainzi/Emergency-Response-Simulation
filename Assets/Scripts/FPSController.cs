@@ -97,7 +97,6 @@ public class FPSController : MonoBehaviour
         {
             GameObject collidedWith = medicHitInfo.collider.gameObject;
             Medic medic = collidedWith.GetComponent<Medic>();
-            UnityEngine.Debug.Log("Ray hit Medic: " + collidedWith.name);
             UnityEngine.Debug.Assert(medic != null);
             if(medic != currentlySelectedMedic)
             {

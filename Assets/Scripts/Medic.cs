@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.UI.Image;
 
 public class Medic : MonoBehaviour
 {
@@ -15,8 +16,13 @@ public class Medic : MonoBehaviour
 
     Animator anim;
 
+    HurtByFire fireHurtTrigger;
+
+    bool hasPath = false;
+    bool safePath = false;
     private void Start()
     {
+        fireHurtTrigger = transform.Find("HurtByFire").GetComponent<HurtByFire>();
         anim = GetComponent<Animator>();
 
         hoverShape = transform.Find("HoverShape").gameObject;
@@ -49,12 +55,21 @@ public class Medic : MonoBehaviour
             hoveredOverPrevFrame = false;
         }
 
-        if(Vector3.Distance(currentDestination, transform.position) < 0.1f)
+        if(hasPath && Vector3.Distance(currentDestination, transform.position) < 0.1f)
         {
             currentDestination = transform.position;
             agent.ResetPath();
 
             anim.SetBool("Running", false);
+
+            hasPath = false;
+            safePath = false;
+        }
+
+        if(hasPath && !safePath && fireHurtTrigger.nearFire > 0)
+        {
+            agent.ResetPath();
+            hasPath = false;
         }
     }
 
@@ -87,25 +102,26 @@ public class Medic : MonoBehaviour
 
     public void GotoPoint(Vector3 point)
     {
-        Debug.Log("agent active = " + agent.isActiveAndEnabled);
-        Debug.Log("agent on navmesh = " + agent.isOnNavMesh);
+        safePath = false;
+        if (fireHurtTrigger.nearFire > 0)
+        {
+            int mask = LayerMask.GetMask("Flammable");
+            bool hit = Physics.CheckSphere(point, 1f, mask, QueryTriggerInteraction.Collide);
+            
+            if (hit)
+            {
+                return;
+            }
+            else
+            {
+                anim.SetBool("NearFire", false);
+                safePath = true;
+            }
+        }
 
         currentDestination = point;
         agent.SetDestination(point);
-
+        hasPath = true;
         anim.SetBool("Running", true);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Flammable flammable;
-        bool found = other.gameObject.TryGetComponent(out flammable);
-        if (found)
-        {
-            if (flammable.onFire)
-            {
-                // the medic is on fire. just lose here?
-            }
-        }
     }
 }
