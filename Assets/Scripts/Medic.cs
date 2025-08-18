@@ -20,6 +20,9 @@ public class Medic : MonoBehaviour
 
     bool hasPath = false;
     bool safePath = false;
+
+    public bool givingCPR = false;
+
     private void Start()
     {
         fireHurtTrigger = transform.Find("HurtByFire").GetComponent<HurtByFire>();
@@ -34,6 +37,9 @@ public class Medic : MonoBehaviour
 
     private void Update()
     {
+        if (givingCPR)
+            return;
+
         if (!selectedByPlayer)
         {
             if (hoveredOver && !hoveredOverPrevFrame)
@@ -123,5 +129,13 @@ public class Medic : MonoBehaviour
         agent.SetDestination(point);
         hasPath = true;
         anim.SetBool("Running", true);
+    }
+
+    public void PerformCPR()
+    {
+        givingCPR = true;
+        agent.ResetPath();
+        hasPath = false;
+        anim.SetTrigger("CPR");
     }
 }
