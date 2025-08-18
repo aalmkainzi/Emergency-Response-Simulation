@@ -47,11 +47,11 @@ Material:
     - _HillCenter: 0.5
     - _HillFallOff: 1
     - _HillFalloff: 5.29
-    - _HillHeight: 3.8
+    - _HillHeight: 2.88
     - _HillRadius: 1.36
     - _Metallic: 0.1
     - _NormalIntensity: 1
-    - _Radius: 0.693
+    - _Radius: 0.39
     - _Smoothness: 0.5
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

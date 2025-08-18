@@ -34,7 +34,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Alpha: 3.28
-    - _BumpScale: 0
+    - _BumpScale: 1
     - _DepthMaxDistance: 1
     - _Displacement: 0.5
     - _DisplacementStrength: 1.93

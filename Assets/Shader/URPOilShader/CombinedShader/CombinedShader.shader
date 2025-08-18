@@ -202,7 +202,7 @@ Shader "Unlit/CombinedShader"
                     _Smoothness, i.normal, viewDir, createLight(i), createIndirect(i));
                 finalColor.a = fixedAlpha;
                 foamFinal.a = fixedAlpha;
-                return finalColor + foamFinal;
+                return finalColor;
             }
             ENDCG
         }

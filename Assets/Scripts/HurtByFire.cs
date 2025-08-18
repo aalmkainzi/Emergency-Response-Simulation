@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class HurtByFire : MonoBehaviour
 {
     public int nearFire;
+    public UnityEvent onNearFire;
 
     [SerializeField] Animator anim;
 
@@ -17,6 +19,8 @@ public class HurtByFire : MonoBehaviour
             Debug.Log(gameObject.name + " Enabled fire reaction");
             if(nearFire == 0) anim.SetBool("NearFire", true);
             nearFire += 1;
+
+            onNearFire?.Invoke();
         }
     }
 
