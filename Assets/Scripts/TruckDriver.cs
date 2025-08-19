@@ -18,6 +18,9 @@ public class TruckDriver : MonoBehaviour
     public Transform toMove;
 
     public GameObject eButton;
+
+    public static int nbRescued = 0;
+
     
     void Start()
     {
@@ -53,6 +56,11 @@ public class TruckDriver : MonoBehaviour
         {
             if(!medic.givingCPR)
             {
+                nbRescued += 1;
+                if(nbRescued == 2)
+                {
+                    ScoreManager.instance.EndSimulation();
+                }
                 toMove.gameObject.SetActive(false);
             }
             yield return null;
@@ -68,8 +76,11 @@ public class TruckDriver : MonoBehaviour
         else // player
         {
             nearPlayer = true;
-            eButton.SetActive(true);
-            eButton.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = "Help";
+            if (!readyForMedic)
+            {
+                eButton.SetActive(true);
+                eButton.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = "Help";
+            }
         }
     }
 

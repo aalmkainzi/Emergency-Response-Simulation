@@ -41,7 +41,8 @@ public class SimpleCarController : MonoBehaviour
             drivingAudioSource = audioSources[1];
             engineAudioSource = audioSources[2];
             engineAudioSource.volume = 0.5f;
-            sirenAudioSource.volume = 0.75f;
+            sirenAudioSource.volume = 0.35f;
+            sirenAudioSource.spatialBlend = 0.5f;
 
             sirenAudioSource.clip = sirenSound;
             drivingAudioSource.clip = drivingSound;
