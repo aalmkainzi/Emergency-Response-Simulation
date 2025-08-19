@@ -8,6 +8,7 @@ public class ShootAFFF : MonoBehaviour
 {
     ParticleSystem ps;
     bool sprayIsOn = false;
+    bool psOn = false;
 
     AFFFPlane[] allFoamPlanes;
     private void Start()
@@ -19,14 +20,14 @@ public class ShootAFFF : MonoBehaviour
     bool first = false;
     void Update()
     {
-        bool mouseHeld = Input.GetMouseButton(0);
+        bool spaceHeld = Input.GetKey(KeyCode.Space);
 
-        if (mouseHeld)
+        if (spaceHeld && !sprayIsOn)
         {
             sprayIsOn = true;
             ps.Play();
         }
-        else if(!mouseHeld && !ps.isStopped)
+        else if(!spaceHeld && sprayIsOn)
         {
             sprayIsOn = false;
             ps.Stop();
@@ -40,12 +41,11 @@ public class ShootAFFF : MonoBehaviour
         {
             int foamLayer = 1 << LayerMask.NameToLayer("Foam");
             if (!first) { Debug.Log("foamLayer = " + foamLayer); first = true;  }
-    
 
-            RaycastHit[] hits = Physics.RaycastAll(transform.parent.position, transform.parent.forward, 7.5f, layerMask: foamLayer);
-
-
-            if(hits != null && hits.Length > 0)
+            // RaycastHit[] hits = Physics.RaycastAll(transform.parent.position, transform.parent.forward, 7.5f, layerMask: foamLayer);
+            RaycastHit[] hits = Physics.CapsuleCastAll(transform.parent.position, transform.parent.position + (transform.parent.forward * 7.5f), 3.0f, transform.parent.forward, 1.0f, layerMask: foamLayer);
+            
+            if (hits != null && hits.Length > 0)
             {
 
                 foreach(RaycastHit rch in hits)

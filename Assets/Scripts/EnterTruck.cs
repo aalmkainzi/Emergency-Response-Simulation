@@ -1,7 +1,12 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EnterTruck : MonoBehaviour
 {
+    public UnityEvent onEnterTruck;
+    public UnityEvent onExitTruck;
+
     public GameObject interiorCamera;
     public GameObject firetruckInteriorOverlay;
     
@@ -10,6 +15,10 @@ public class EnterTruck : MonoBehaviour
     SimpleCarController firetruckController;
     bool in_range = false;
     bool inside = false;
+
+    public GameObject EButtonIcon;
+    public GameObject spaceButton;
+
     void Start()
     {
         firetruckController = transform.parent.GetComponent<SimpleCarController>();
@@ -35,6 +44,14 @@ public class EnterTruck : MonoBehaviour
 
                 interiorCamera.SetActive(true);
                 firetruckInteriorOverlay.SetActive(true);
+
+                EButtonIcon.SetActive(true);
+                EButtonIcon.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = "Exit Truck";
+
+                spaceButton.SetActive(true);
+                spaceButton.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = "Siren";
+
+                onEnterTruck?.Invoke();
             }
         }
         else
@@ -50,17 +67,26 @@ public class EnterTruck : MonoBehaviour
                 firetruckInteriorOverlay.SetActive(false);
 
                 Debug.Log("Got out firetruck");
+
+                spaceButton.SetActive(false);
+                EButtonIcon.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = "Enter Truck";
+
+                onExitTruck?.Invoke();
             }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        EButtonIcon.SetActive(true);
+        EButtonIcon.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = "Enter Truck";
+
         in_range = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
+        EButtonIcon.SetActive(false);
         in_range = false;
     }
 

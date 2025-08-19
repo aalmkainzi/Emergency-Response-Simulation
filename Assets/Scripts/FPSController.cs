@@ -26,6 +26,9 @@ public class FPSController : MonoBehaviour
     Medic currentlyHoveredMedic = null;
 
     int medicLayer;
+
+    public GameObject mouseIcon;
+
     private void OnEnable()
     {
         medicLayer = LayerMask.NameToLayer("Medic");
@@ -95,6 +98,8 @@ public class FPSController : MonoBehaviour
 
         if(medicHit)
         {
+            mouseIcon.SetActive(true);
+
             GameObject collidedWith = medicHitInfo.collider.gameObject;
             Medic medic = collidedWith.GetComponent<Medic>();
             UnityEngine.Debug.Assert(medic != null);
@@ -140,6 +145,11 @@ public class FPSController : MonoBehaviour
             {
                 currentlySelectedMedic.GotoPoint(hitInfo.point);
             }
+        }
+
+        if (currentlyHoveredMedic == null && currentlySelectedMedic == null)
+        {
+            mouseIcon.SetActive(false);
         }
     }
 
