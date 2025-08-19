@@ -136,6 +136,7 @@ public class Medic : MonoBehaviour
         givingCPR = true;
         agent.ResetPath();
         hasPath = false;
+        anim.SetBool("Running", false);
         anim.SetTrigger("CPR");
     }
 }

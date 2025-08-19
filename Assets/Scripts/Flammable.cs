@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Flammable : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class Flammable : MonoBehaviour
 
     public List<Flammable> nearbyFlammables;
 
+    public static int nbOnFire = 0;
     private void Start()
     {
         nearbyFlammables = new();
@@ -22,9 +24,11 @@ public class Flammable : MonoBehaviour
 
     public void SetOnFire()
     {
-        if (onFire) return;
+        if (onFire || !gameObject.activeSelf) return;
 
         onFire = true;
+        nbOnFire += 1;
+        Debug.Log("Flammable: nbOnFire = " + nbOnFire);
         Transform child = transform.Find("FirePS");
 
         if (child == null)

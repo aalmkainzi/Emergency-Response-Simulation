@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class AFFFPlane : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class AFFFPlane : MonoBehaviour
     bool done = false;
     bool fullyFoamed = false;
     [SerializeField] float maxHilLHeight = 2;
+
+    public UnityEvent onExtinguish;
+    
     void Start()
     {
         nearbyFlammables = new();
@@ -54,9 +58,21 @@ public class AFFFPlane : MonoBehaviour
     {
         if(fullyFoamed && !done)
         {
-            Debug.Log("About to disable " + nearbyFlammables.Count + " flamables");
             foreach(Flammable f in nearbyFlammables)
             {
+                if (f.gameObject.activeSelf && f.onFire)
+                {
+                    Flammable.nbOnFire -= 1;
+                    f.onFire = false;
+
+                    if (Flammable.nbOnFire == 0)
+                    {
+                        BeginMission.instance.fireSound.Stop();
+                    }
+
+                    onExtinguish?.Invoke();
+                }
+                    
                 f.gameObject.SetActive(false);
             }
             done = true;

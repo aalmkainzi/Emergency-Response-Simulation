@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SimpleCarController : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class SimpleCarController : MonoBehaviour
     public AudioClip carEngineSound;
 
     bool initailized = false;
+
+    public UnityEvent onSiren;
     void Start()
     {
 
@@ -68,9 +71,14 @@ public class SimpleCarController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space))
         {
             if (!sirenAudioSource.isPlaying)
+            {
+                onSiren?.Invoke();
                 sirenAudioSource.Play();
+            }
             else
+            {
                 sirenAudioSource.Stop();
+            }
         }
     }
 

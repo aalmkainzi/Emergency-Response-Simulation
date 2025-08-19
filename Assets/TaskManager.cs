@@ -6,24 +6,27 @@ public class TaskManager : MonoBehaviour
     public enum PlayerTask
     {
         ENTER_TRUCK,
+        TURN_SIREN_ON,
         GO_TO_CRASH,
-        EXIT_TRUCK,
         TAKE_FOAM,
         EXTINGUISH_FLAMES,
         RESCUE_DRIVERS
     };
 
+    bool inMissionArea = false;
+
     public PlayerTask currentTask = PlayerTask.ENTER_TRUCK;
     public TextMeshProUGUI taskText;
 
-    void Start()
-    {
-        
-    }
+    public static TaskManager instance;
 
-    void Update()
+    private void Start()
     {
-        
+        if (instance != null)
+        {
+            Destroy(instance);
+        }
+        instance = this;
     }
 
     void SetTask(PlayerTask newTask)
@@ -34,11 +37,11 @@ public class TaskManager : MonoBehaviour
             case PlayerTask.ENTER_TRUCK:
                 taskText.text = "Task: Enter firetruck";
                 break;
+            case PlayerTask.TURN_SIREN_ON:
+                taskText.text = "Task: Turn siren on";
+                break;
             case PlayerTask.GO_TO_CRASH:
                 taskText.text = "Task: Go to crash site";
-                break;
-            case PlayerTask.EXIT_TRUCK:
-                taskText.text = "Task: Exit truck";
                 break;
             case PlayerTask.TAKE_FOAM:
                 taskText.text = "Task: Take foam from firetruck storage";
@@ -56,7 +59,52 @@ public class TaskManager : MonoBehaviour
     {
         if(currentTask == PlayerTask.ENTER_TRUCK)
         {
+            SetTask(PlayerTask.TURN_SIREN_ON);
+        }
+    }
+
+    public void ExitedTruck()
+    {
+        if(inMissionArea && currentTask == PlayerTask.GO_TO_CRASH)
+        {
+            SetTask(PlayerTask.TAKE_FOAM);
+        }
+    }
+
+    public void OnSiren()
+    {
+        if (currentTask == PlayerTask.TURN_SIREN_ON)
+        {
             SetTask(PlayerTask.GO_TO_CRASH);
+        }
+    }
+
+    public void OnEnterMissionArea()
+    {
+        inMissionArea = true;
+    }
+
+    public void OnTakeFoam()
+    {
+        if(currentTask == PlayerTask.TAKE_FOAM)
+        {
+            SetTask(PlayerTask.EXTINGUISH_FLAMES);
+        }
+    }
+    
+    public void OnReturnFoam()
+    {
+        if(currentTask == PlayerTask.EXTINGUISH_FLAMES)
+        {
+            SetTask(PlayerTask.TAKE_FOAM);
+        }
+    }
+
+    public void OnExtinguishFire()
+    {
+        if(Flammable.nbOnFire == 0 && currentTask == PlayerTask.EXTINGUISH_FLAMES)
+        {
+            SetTask(PlayerTask.RESCUE_DRIVERS);
         }
     }
 }

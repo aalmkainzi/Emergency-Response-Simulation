@@ -1,5 +1,7 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TruckDriver : MonoBehaviour
 {
@@ -12,6 +14,10 @@ public class TruckDriver : MonoBehaviour
     Animator anim;
 
     public bool gettingCPR;
+
+    public Transform toMove;
+
+    public GameObject eButton;
     
     void Start()
     {
@@ -20,12 +26,12 @@ public class TruckDriver : MonoBehaviour
 
     void Update()
     {
-        if(!readyForMedic && nearPlayer)
+        if(!readyForMedic && nearPlayer && TaskManager.instance.currentTask == TaskManager.PlayerTask.RESCUE_DRIVERS)
         {
             if(Input.GetKeyDown(KeyCode.E))
             {
                 readyForMedic = true;
-                transform.parent.localPosition = newPos;
+                toMove.localPosition = newPos;
                 anim.SetBool("Lay", true);
                 readyForMedic = true;
             }
@@ -47,7 +53,7 @@ public class TruckDriver : MonoBehaviour
         {
             if(!medic.givingCPR)
             {
-                transform.parent.gameObject.SetActive(false);
+                toMove.gameObject.SetActive(false);
             }
             yield return null;
         }
@@ -62,6 +68,8 @@ public class TruckDriver : MonoBehaviour
         else // player
         {
             nearPlayer = true;
+            eButton.SetActive(true);
+            eButton.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = "Help";
         }
     }
 
@@ -81,6 +89,7 @@ public class TruckDriver : MonoBehaviour
         }
         else // player
         {
+            eButton.SetActive(false);
             nearPlayer = false;
         }
     }
